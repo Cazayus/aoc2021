@@ -16,13 +16,32 @@ fn main() {
     let nums = read_ints("inputs/day1.txt");
     println!("Read {} nums", nums.len());
 
-    for num1 in nums.iter() {
-        for num2 in nums.iter() {
-            for num3 in nums.iter() {
-                if num1 + num2 + num3 == 2020 {
-                    println!("{} * {} * {} = {}", num1, num2, num3, num1 * num2 * num3);
-                }
-            }
-        }
-    }
+    part_one(&nums);
+    part_two(nums);
+}
+
+fn part_one(nums: &Vec<i32>) {
+    println!(
+        "Nb of increases is {}",
+        nums.windows(2)
+            .filter(|window| window[0] < window[1])
+            .count()
+    );
+}
+
+fn part_two(nums: Vec<i32>) {
+    println!(
+        "Nb of increases is {}",
+        nums.windows(3)
+            .map(|window| window.iter().sum::<i32>())
+            .collect::<Vec<i32>>()
+            .windows(2)
+            .filter(|window| window[0] < window[1])
+            .count()
+    );
+
+    println!(
+        "Nb of increases is {}",
+        nums.windows(4).filter(|w| w[0] < w[3]).count()
+    );
 }
