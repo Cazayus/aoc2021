@@ -1,57 +1,48 @@
 use aoc2021::util;
 
 fn main() {
-    let instructions = util::read_lines_as_str("inputs/day2.txt");
-
+    let input = util::read_lines("inputs/day2.txt");
+    let instructions: Vec<(&str, i64)> = input
+        .lines()
+        .map(|line| {
+            let split_instruction: Vec<&str> = line.split_whitespace().collect();
+            (split_instruction[0], split_instruction[1].parse().unwrap())
+        })
+        .collect();
     part_one(&instructions);
-    part_two(instructions);
+    part_two(&instructions);
 }
 
-fn part_one(instructions: &Vec<String>) {
-    let mut current_depth = 0;
-    let mut current_horizontal = 0;
-    instructions.iter().for_each(|instruction| {
-        if instruction.starts_with("forward") {
-            current_horizontal += instruction.split(' ').collect::<Vec<&str>>()[1]
-                .parse::<i32>()
-                .unwrap();
-        } else if instruction.starts_with("up") {
-            current_depth -= instruction.split(' ').collect::<Vec<&str>>()[1]
-                .parse::<i32>()
-                .unwrap();
-        } else if instruction.starts_with("down") {
-            current_depth += instruction.split(' ').collect::<Vec<&str>>()[1]
-                .parse::<i32>()
-                .unwrap();
-        } else {
-            panic!()
+fn part_one(instructions: &Vec<(&str, i64)>) {
+    let mut depth_horizontal = (0, 0);
+
+    for instruction in instructions {
+        match instruction.0 {
+            "forward" => depth_horizontal.1 += instruction.1,
+            "up" => depth_horizontal.0 -= instruction.1,
+            "down" => depth_horizontal.0 += instruction.1,
+            _ => panic!(),
         }
-    });
-    println!("Solution is {}", current_depth * current_horizontal)
+    }
+    println!("Solution is {}", depth_horizontal.0 * depth_horizontal.1);
 }
 
-fn part_two(instructions: Vec<String>) {
-    let mut current_depth = 0;
-    let mut current_horizontal = 0;
-    let mut aim = 0;
-    instructions.iter().for_each(|instruction| {
-        if instruction.starts_with("forward") {
-            let added_value = instruction.split(' ').collect::<Vec<&str>>()[1]
-                .parse::<i32>()
-                .unwrap();
-            current_horizontal += added_value;
-            current_depth += aim * added_value;
-        } else if instruction.starts_with("up") {
-            aim -= instruction.split(' ').collect::<Vec<&str>>()[1]
-                .parse::<i32>()
-                .unwrap();
-        } else if instruction.starts_with("down") {
-            aim += instruction.split(' ').collect::<Vec<&str>>()[1]
-                .parse::<i32>()
-                .unwrap();
-        } else {
-            panic!()
+fn part_two(instructions: &Vec<(&str, i64)>) {
+    let mut depth_horizontal_aim = (0, 0, 0);
+
+    for instruction in instructions {
+        match instruction.0 {
+            "forward" => {
+                depth_horizontal_aim.1 += instruction.1;
+                depth_horizontal_aim.0 += depth_horizontal_aim.2 * instruction.1;
+            }
+            "up" => depth_horizontal_aim.2 -= instruction.1,
+            "down" => depth_horizontal_aim.2 += instruction.1,
+            _ => panic!(),
         }
-    });
-    println!("Solution is {}", current_depth * current_horizontal)
+    }
+    println!(
+        "Solution is {}",
+        depth_horizontal_aim.0 * depth_horizontal_aim.1
+    );
 }
