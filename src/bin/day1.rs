@@ -2,7 +2,6 @@ use aoc2021::util;
 
 fn main() {
     let nums = util::read_lines_as_ints("inputs/day1.txt");
-    println!("Read {} nums", nums.len());
 
     part_one(&nums);
     part_two(nums);
