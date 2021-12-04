@@ -9,42 +9,31 @@ fn main() {
 
 fn find_most_and_least_common_bit_as_vec(lines: &Vec<&str>) -> (Vec<char>, Vec<char>) {
     let mut ones_vec = Vec::new();
+    let mut zeroes_vec = Vec::new();
     for line in lines {
         for (index, b) in line.bytes().enumerate() {
             if ones_vec.get(index).is_none() {
                 ones_vec.push(0);
+                zeroes_vec.push(0);
             }
             if b == b'1' {
                 ones_vec[index] += 1;
+            } else {
+                zeroes_vec[index] += 1
             }
         }
     }
-    return (
-        ones_vec
-            .iter()
-            .map(|&ones| {
-                return if ones == lines.len()
-                    || ones as f64 >= (lines.len() as f64 / 2.0) && ones != 0
-                {
-                    '1'
-                } else {
-                    '0'
-                };
-            })
-            .collect::<Vec<char>>(),
-        ones_vec
-            .iter()
-            .map(|&ones| {
-                return if ones == lines.len()
-                    || (ones as f64) < (lines.len() as f64 / 2.0) && ones != 0
-                {
-                    '1'
-                } else {
-                    '0'
-                };
-            })
-            .collect::<Vec<char>>(),
-    );
+    let mut output: (Vec<char>, Vec<char>) = (vec![], vec![]);
+    for i in 0..ones_vec.len() {
+        if ones_vec[i] >= zeroes_vec[i] {
+            output.0.push('1');
+            output.1.push('0');
+        } else {
+            output.0.push('0');
+            output.1.push('1');
+        }
+    }
+    return output;
 }
 
 fn part_one(lines: &Vec<&str>) {
