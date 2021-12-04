@@ -1,5 +1,12 @@
 [Link](https://www.markdownguide.org/basic-syntax/) to markdown syntax
 
+### Day Three
+Premier jet crade, il faudrait améliorer le code ou trouver une astuce.
+
+Méthode filter moins bien que méthode retain.
+
+Un peu de galère pour les cas où la liste était de longeur impaire, ou alors quand on avait que des 0 ou que des 1 ><
+
 ### Day Two
 Basic string manipulation. 
 
