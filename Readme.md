@@ -1,5 +1,8 @@
 [Link](https://www.markdownguide.org/basic-syntax/) to Markdown syntax
 
+### Day six
+Deque exists in Rust. Makes it easy
+
 ### Day five
 Partie 1 easy. 
 
