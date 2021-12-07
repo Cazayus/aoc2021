@@ -1,5 +1,10 @@
 [Link](https://www.markdownguide.org/basic-syntax/) to Markdown syntax
 
+### Day seven
+Problem differentiating between arithmetic and geometric suite... 
+
+We wanted the sum and not the n-th member ><
+
 ### Day six
 Deque exists in Rust. Makes it easy
 
