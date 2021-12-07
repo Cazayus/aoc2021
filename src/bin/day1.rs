@@ -4,10 +4,10 @@ fn main() {
     let nums = util::read_lines_as_ints("inputs/day1.txt");
 
     part_one(&nums);
-    part_two(nums);
+    part_two(&nums);
 }
 
-fn part_one(nums: &Vec<i32>) {
+fn part_one(nums: &[i32]) {
     println!(
         "Nb of increases is {}",
         nums.windows(2)
@@ -16,7 +16,7 @@ fn part_one(nums: &Vec<i32>) {
     );
 }
 
-fn part_two(nums: Vec<i32>) {
+fn part_two(nums: &[i32]) {
     println!(
         "Nb of increases is {}",
         nums.windows(3)

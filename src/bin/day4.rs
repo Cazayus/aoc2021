@@ -13,8 +13,8 @@ impl Board {
         if input.len() != 5 {
             panic!()
         }
-        for i in 0..5 {
-            self.content[i + 5 * line_index] = (input[i], false);
+        for (i, &value) in input.iter().enumerate().take(5) {
+            self.content[i + 5 * line_index] = (value, false);
         }
     }
     fn set_true(&mut self, instruction: i32) {
@@ -28,20 +28,20 @@ impl Board {
         let is_any_line_completed = self
             .content
             .chunks(5)
-            .any(|line| line.iter().all(|&element| element.1 == true));
+            .any(|line| line.iter().all(|&element| element.1));
         let is_any_column_completed = (0..5)
             .map(|index_column| self.content.iter().skip(index_column).step_by(5))
-            .any(|mut column| column.all(|element| element.1 == true));
-        return is_any_line_completed || is_any_column_completed;
+            .any(|mut column| column.all(|element| element.1));
+        is_any_line_completed || is_any_column_completed
     }
     fn compute_value(&self, instruction: i32) -> i32 {
         let count: i32 = self
             .content
             .iter()
-            .filter(|element| element.1 == false)
+            .filter(|element| !element.1)
             .map(|element| element.0)
             .sum();
-        return count * instruction;
+        count * instruction
     }
 }
 
@@ -77,7 +77,7 @@ fn main() {
     part_two(&instructions, &mut boards);
 }
 
-fn part_one(instructions: &Vec<i32>, boards: &mut Vec<Board>) {
+fn part_one(instructions: &[i32], boards: &mut Vec<Board>) {
     for &instruction in instructions {
         for board in boards.iter_mut() {
             board.set_true(instruction);
@@ -89,7 +89,7 @@ fn part_one(instructions: &Vec<i32>, boards: &mut Vec<Board>) {
     }
 }
 
-fn part_two(instructions: &Vec<i32>, boards: &mut Vec<Board>) {
+fn part_two(instructions: &[i32], boards: &mut Vec<Board>) {
     for &instruction in instructions {
         for board in boards.iter_mut() {
             board.set_true(instruction);

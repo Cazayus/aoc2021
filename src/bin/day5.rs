@@ -7,7 +7,7 @@ struct Grid {
 }
 
 impl Grid {
-    fn fill_grid(&mut self, input: &Vec<i32>) {
+    fn fill_grid(&mut self, input: &[i32]) {
         if input.len() != 4 {
             panic!()
         }
@@ -29,7 +29,7 @@ impl Grid {
             }
         }
     }
-    fn fill_diagonal(&mut self, input: &Vec<i32>) {
+    fn fill_diagonal(&mut self, input: &[i32]) {
         if input.len() != 4 {
             panic!()
         }
@@ -67,7 +67,7 @@ fn main() {
     part_two(&lines);
 }
 
-fn part_one(lines: &Vec<Vec<i32>>) {
+fn part_one(lines: &[Vec<i32>]) {
     let mut grid = Grid {
         content: HashMap::new(),
     };
@@ -78,7 +78,7 @@ fn part_one(lines: &Vec<Vec<i32>>) {
     println!("Solution is {}", grid.content.len());
 }
 
-fn part_two(lines: &Vec<Vec<i32>>) {
+fn part_two(lines: &[Vec<i32>]) {
     let mut grid = Grid {
         content: HashMap::new(),
     };

@@ -13,7 +13,7 @@ fn main() {
     part_two(&instructions);
 }
 
-fn part_one(instructions: &Vec<(&str, i64)>) {
+fn part_one(instructions: &[(&str, i64)]) {
     let mut depth_horizontal = (0, 0);
 
     for instruction in instructions {
@@ -27,7 +27,7 @@ fn part_one(instructions: &Vec<(&str, i64)>) {
     println!("Solution is {}", depth_horizontal.0 * depth_horizontal.1);
 }
 
-fn part_two(instructions: &Vec<(&str, i64)>) {
+fn part_two(instructions: &[(&str, i64)]) {
     let mut depth_horizontal_aim = (0, 0, 0);
 
     for instruction in instructions {

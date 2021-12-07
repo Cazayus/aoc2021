@@ -7,7 +7,7 @@ fn main() {
     part_two(&lines);
 }
 
-fn find_most_common_bit_as_vec(lines: &Vec<&str>) -> Vec<char> {
+fn find_most_common_bit_as_vec(lines: &[&str]) -> Vec<char> {
     let line_length = lines[0].len();
     let mut output: Vec<char> = Vec::new();
     for index in 0..line_length {
@@ -21,18 +21,18 @@ fn find_most_common_bit_as_vec(lines: &Vec<&str>) -> Vec<char> {
             output.push('0');
         }
     }
-    return output;
+    output
 }
 
-fn convert_most_common_to_least_common(most_common: &Vec<char>) -> Vec<char> {
+fn convert_most_common_to_least_common(most_common: &[char]) -> Vec<char> {
     return most_common
         .iter()
         .map(|&c| if c == '1' { '0' } else { '1' })
         .collect();
 }
 
-fn part_one(lines: &Vec<&str>) {
-    let most_common_bits = find_most_common_bit_as_vec(&lines);
+fn part_one(lines: &[&str]) {
+    let most_common_bits = find_most_common_bit_as_vec(lines);
     let least_common_bits = convert_most_common_to_least_common(&most_common_bits);
     let gamma =
         isize::from_str_radix(most_common_bits.iter().collect::<String>().as_str(), 2).unwrap();
@@ -41,9 +41,9 @@ fn part_one(lines: &Vec<&str>) {
     println!("Solution is {}", gamma * epsilon);
 }
 
-fn part_two(lines: &Vec<&str>) {
+fn part_two(lines: &[&str]) {
     let mut current_bit_under_scrutiny = 0;
-    let mut mutable_lines: Vec<&str> = lines.clone();
+    let mut mutable_lines: Vec<&str> = lines.to_vec();
     while mutable_lines.len() > 1 {
         let most_common_bits = find_most_common_bit_as_vec(&mutable_lines);
         mutable_lines.retain(|line| {
@@ -54,7 +54,7 @@ fn part_two(lines: &Vec<&str>) {
     }
     let oxygen = isize::from_str_radix(mutable_lines.first().unwrap(), 2).unwrap();
     let mut current_bit_under_scrutiny = 0;
-    let mut mutable_lines: Vec<&str> = lines.clone();
+    let mut mutable_lines: Vec<&str> = lines.to_vec();
     while mutable_lines.len() > 1 {
         let least_common_bit =
             convert_most_common_to_least_common(&find_most_common_bit_as_vec(&mutable_lines));
