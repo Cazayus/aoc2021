@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use aoc2021::util;
+const DATA: &str = include_str!("../inputs/day8.txt");
+
+// check this https://www.reddit.com/r/adventofcode/comments/rc5s3z/2021_day_8_part_2_a_simple_fast_and_deterministic/
 
 //  Combination list:
 //  0:      1:      2:      3:      4:
@@ -119,8 +121,22 @@ impl Line {
 }
 
 fn main() {
-    let input = util::read_lines("inputs/day8_sample.txt");
-    let input: Vec<Line> = input
+    println!("part 1: {}", part_one(DATA));
+    println!("part 2: {}", part_two(DATA));
+}
+
+fn extract_sorted_seg_list(split_line: &str) -> Vec<String> {
+    split_line.split_whitespace().map(sort_string).collect()
+}
+
+fn sort_string(elem: &str) -> String {
+    let mut temp_vec: Vec<char> = elem.chars().collect();
+    temp_vec.sort_unstable();
+    temp_vec.into_iter().collect()
+}
+
+fn part_one(data: &str) -> usize {
+    let input: Vec<Line> = data
         .lines()
         .map(|line| line.split(" | "))
         .map(|mut split_line| {
@@ -134,40 +150,62 @@ fn main() {
             line
         })
         .collect();
-    part_one(&input);
-    part_two(&input);
+    input
+        .iter()
+        .flat_map(|line| &line.after_decoded)
+        .filter(|&&seg| seg == 1 || seg == 4 || seg == 7 || seg == 8)
+        .count()
 }
 
-fn extract_sorted_seg_list(split_line: &str) -> Vec<String> {
-    split_line.split_whitespace().map(sort_string).collect()
-}
-
-fn sort_string(elem: &str) -> String {
-    let mut temp_vec: Vec<char> = elem.chars().collect();
-    temp_vec.sort_unstable();
-    temp_vec.into_iter().collect()
-}
-
-fn part_one(input: &[Line]) {
-    println!(
-        "Solution is {}",
-        input
-            .iter()
-            .flat_map(|line| &line.after_decoded)
-            .filter(|&&seg| seg == 1 || seg == 4 || seg == 7 || seg == 8)
-            .count()
-    );
-}
-
-fn part_two(input: &[Line]) {
-    println!(
-        "Solution is {}",
-        input
-            .iter()
-            .map(|line| line.after_decoded[0] * 1000
+fn part_two(data: &str) -> i32 {
+    let input: Vec<Line> = data
+        .lines()
+        .map(|line| line.split(" | "))
+        .map(|mut split_line| {
+            let mut line = Line {
+                seg_list_to_value: Default::default(),
+                before: extract_sorted_seg_list(split_line.next().unwrap()),
+                after: extract_sorted_seg_list(split_line.next().unwrap()),
+                after_decoded: vec![],
+            };
+            line.decipher();
+            line
+        })
+        .collect();
+    input
+        .iter()
+        .map(|line| {
+            line.after_decoded[0] * 1000
                 + line.after_decoded[1] * 100
                 + line.after_decoded[2] * 10
-                + line.after_decoded[3])
-            .sum::<i32>()
-    );
+                + line.after_decoded[3]
+        })
+        .sum::<i32>()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const SAMPLE_DATA: &str = include_str!("../inputs/day8_sample.txt");
+
+    #[test]
+    fn test_one_sample() {
+        assert_eq!(part_one(SAMPLE_DATA), 26);
+    }
+
+    #[test]
+    fn test_two_sample() {
+        assert_eq!(part_two(SAMPLE_DATA), 61229);
+    }
+
+    #[test]
+    fn test_one() {
+        assert_eq!(part_one(DATA), 383);
+    }
+
+    #[test]
+    fn test_two() {
+        assert_eq!(part_two(DATA), 998900);
+    }
 }

@@ -1,6 +1,7 @@
-use aoc2021::util;
 use std::cmp;
 use std::collections::HashMap;
+
+const DATA: &str = include_str!("../inputs/day5.txt");
 
 struct Grid {
     content: HashMap<[i32; 2], i32>,
@@ -53,8 +54,12 @@ impl Grid {
 }
 
 fn main() {
-    let input = util::read_lines("inputs/day5.txt");
-    let lines: Vec<Vec<i32>> = input
+    println!("part 1: {}", part_one(DATA));
+    println!("part 2: {}", part_two(DATA));
+}
+
+fn part_one(data: &str) -> usize {
+    let lines: Vec<Vec<i32>> = data
         .lines()
         .map(|line| {
             line.split(" -> ")
@@ -63,29 +68,60 @@ fn main() {
                 .collect::<Vec<i32>>()
         })
         .collect();
-    part_one(&lines);
-    part_two(&lines);
-}
-
-fn part_one(lines: &[Vec<i32>]) {
     let mut grid = Grid {
         content: HashMap::new(),
     };
     for line in lines {
-        grid.fill_grid(line);
+        grid.fill_grid(&line);
     }
     grid.content.retain(|_, &mut value| value > 1);
-    println!("Solution is {}", grid.content.len());
+    grid.content.len()
 }
 
-fn part_two(lines: &[Vec<i32>]) {
+fn part_two(data: &str) -> usize {
+    let lines: Vec<Vec<i32>> = data
+        .lines()
+        .map(|line| {
+            line.split(" -> ")
+                .flat_map(|coord| coord.split(','))
+                .map(|value| value.parse::<i32>().unwrap())
+                .collect::<Vec<i32>>()
+        })
+        .collect();
     let mut grid = Grid {
         content: HashMap::new(),
     };
     for line in lines {
-        grid.fill_grid(line);
-        grid.fill_diagonal(line);
+        grid.fill_grid(&line);
+        grid.fill_diagonal(&line);
     }
     grid.content.retain(|_, &mut value| value > 1);
-    println!("Solution is {}", grid.content.len());
+    grid.content.len()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const SAMPLE_DATA: &str = include_str!("../inputs/day5_sample.txt");
+
+    #[test]
+    fn test_one_sample() {
+        assert_eq!(part_one(SAMPLE_DATA), 5);
+    }
+
+    #[test]
+    fn test_two_sample() {
+        assert_eq!(part_two(SAMPLE_DATA), 12);
+    }
+
+    #[test]
+    fn test_one() {
+        assert_eq!(part_one(DATA), 4655);
+    }
+
+    #[test]
+    fn test_two() {
+        assert_eq!(part_two(DATA), 20500);
+    }
 }

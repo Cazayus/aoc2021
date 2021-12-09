@@ -1,34 +1,51 @@
-use aoc2021::util;
+const DATA: &str = include_str!("../inputs/day1.txt");
 
 fn main() {
-    let nums = util::read_lines_as_ints("inputs/day1.txt");
-
-    part_one(&nums);
-    part_two(&nums);
+    println!("part 1: {}", part_one(DATA));
+    println!("part 2: {}", part_two(DATA));
 }
 
-fn part_one(nums: &[i32]) {
-    println!(
-        "Nb of increases is {}",
-        nums.windows(2)
-            .filter(|window| window[0] < window[1])
-            .count()
-    );
+fn part_one(data: &str) -> usize {
+    data.lines()
+        .map(|line| line.parse::<u32>().unwrap())
+        .collect::<Vec<u32>>()
+        .windows(2)
+        .filter(|window| window[0] < window[1])
+        .count()
 }
 
-fn part_two(nums: &[i32]) {
-    println!(
-        "Nb of increases is {}",
-        nums.windows(3)
-            .map(|window| window.iter().sum::<i32>())
-            .collect::<Vec<i32>>()
-            .windows(2)
-            .filter(|window| window[0] < window[1])
-            .count()
-    );
+fn part_two(data: &str) -> usize {
+    data.lines()
+        .map(|line| line.parse::<u32>().unwrap())
+        .collect::<Vec<u32>>()
+        .windows(4)
+        .filter(|&w| w[0] < w[3])
+        .count()
+}
 
-    println!(
-        "Nb of increases is {}",
-        nums.windows(4).filter(|w| w[0] < w[3]).count()
-    );
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const SAMPLE_DATA: &str = include_str!("../inputs/day1_sample.txt");
+
+    #[test]
+    fn test_one_sample() {
+        assert_eq!(part_one(SAMPLE_DATA), 7);
+    }
+
+    #[test]
+    fn test_two_sample() {
+        assert_eq!(part_two(SAMPLE_DATA), 5);
+    }
+
+    #[test]
+    fn test_one() {
+        assert_eq!(part_one(DATA), 1715);
+    }
+
+    #[test]
+    fn test_two() {
+        assert_eq!(part_two(DATA), 1739);
+    }
 }

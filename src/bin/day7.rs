@@ -1,18 +1,17 @@
-use aoc2021::util;
+const DATA: &str = include_str!("../inputs/day7.txt");
 
 fn main() {
-    let input = util::read_lines("inputs/day7.txt");
-    let positions: Vec<i32> = input
+    println!("part 1: {}", part_one(DATA));
+    println!("part 2: {}", part_two(DATA));
+}
+
+fn part_one(data: &str) -> i32 {
+    let positions: Vec<i32> = data
         .split(',')
         .map(|position| position.parse().unwrap())
         .collect();
-    let min = positions.iter().min().unwrap();
-    let max = positions.iter().max().unwrap();
-    part_one(&positions, *min, *max);
-    part_two(&positions, *min, *max);
-}
-
-fn part_one(positions: &[i32], min: i32, max: i32) {
+    let min = *positions.iter().min().unwrap();
+    let max = *positions.iter().max().unwrap();
     let answer: i32 = (min..=max)
         .map(|target| {
             positions
@@ -22,10 +21,16 @@ fn part_one(positions: &[i32], min: i32, max: i32) {
         })
         .min()
         .unwrap();
-    println!("Solution is {}", answer);
+    answer
 }
 
-fn part_two(positions: &[i32], min: i32, max: i32) {
+fn part_two(data: &str) -> i32 {
+    let positions: Vec<i32> = data
+        .split(',')
+        .map(|position| position.parse().unwrap())
+        .collect();
+    let min = *positions.iter().min().unwrap();
+    let max = *positions.iter().max().unwrap();
     let answer: i32 = (min..=max)
         .map(|target| {
             positions
@@ -38,5 +43,32 @@ fn part_two(positions: &[i32], min: i32, max: i32) {
         })
         .min()
         .unwrap();
-    println!("Solution is {}", answer);
+    answer
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const SAMPLE_DATA: &str = include_str!("../inputs/day7_sample.txt");
+
+    #[test]
+    fn test_one_sample() {
+        assert_eq!(part_one(SAMPLE_DATA), 37);
+    }
+
+    #[test]
+    fn test_two_sample() {
+        assert_eq!(part_two(SAMPLE_DATA), 168);
+    }
+
+    #[test]
+    fn test_one() {
+        assert_eq!(part_one(DATA), 344605);
+    }
+
+    #[test]
+    fn test_two() {
+        assert_eq!(part_two(DATA), 93699985);
+    }
 }

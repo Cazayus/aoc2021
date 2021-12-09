@@ -1,4 +1,4 @@
-use aoc2021::util;
+const DATA: &str = include_str!("../inputs/day4.txt");
 
 struct Board {
     content: [(i32, bool); 25],
@@ -46,8 +46,12 @@ impl Board {
 }
 
 fn main() {
-    let input = util::read_lines("inputs/day4.txt");
-    let lines = input.lines().collect::<Vec<&str>>();
+    println!("part 1: {}", part_one(DATA));
+    println!("part 2: {}", part_two(DATA));
+}
+
+fn part_one(data: &str) -> i32 {
+    let lines = data.lines().collect::<Vec<&str>>();
     let mut lines = lines.iter();
     let instructions: Vec<i32> = lines
         .next()
@@ -73,34 +77,82 @@ fn main() {
             break;
         }
     }
-    part_one(&instructions, &mut boards);
-    part_two(&instructions, &mut boards);
-}
-
-fn part_one(instructions: &[i32], boards: &mut Vec<Board>) {
-    for &instruction in instructions {
+    for instruction in instructions {
         for board in boards.iter_mut() {
             board.set_true(instruction);
             if board.is_completed() {
-                println!("Solution is {}", board.compute_value(instruction));
-                return;
+                return board.compute_value(instruction);
             }
         }
     }
+    panic!()
 }
 
-fn part_two(instructions: &[i32], boards: &mut Vec<Board>) {
-    for &instruction in instructions {
+fn part_two(data: &str) -> i32 {
+    let lines = data.lines().collect::<Vec<&str>>();
+    let mut lines = lines.iter();
+    let instructions: Vec<i32> = lines
+        .next()
+        .unwrap()
+        .split(',')
+        .map(|value| value.parse().unwrap())
+        .collect();
+    let mut boards: Vec<Board> = Vec::new();
+    loop {
+        let next = lines.next();
+        if next != None {
+            let next = next.unwrap();
+            if next.is_empty() {
+                let mut board = Board {
+                    content: [(-1, false); 25],
+                };
+                for line_index in 0..5 {
+                    board.set_line(lines.next().unwrap(), line_index);
+                }
+                boards.push(board)
+            }
+        } else {
+            break;
+        }
+    }
+    for instruction in instructions {
         for board in boards.iter_mut() {
             board.set_true(instruction);
         }
         if boards.len() == 1 {
             let board = boards.first().unwrap();
             if board.is_completed() {
-                println!("Solution is {}", board.compute_value(instruction));
-                return;
+                return board.compute_value(instruction);
             }
         }
         boards.retain(|board| !board.is_completed());
+    }
+    panic!();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const SAMPLE_DATA: &str = include_str!("../inputs/day4_sample.txt");
+
+    #[test]
+    fn test_one_sample() {
+        assert_eq!(part_one(SAMPLE_DATA), 4512);
+    }
+
+    #[test]
+    fn test_two_sample() {
+        assert_eq!(part_two(SAMPLE_DATA), 1924);
+    }
+
+    #[test]
+    fn test_one() {
+        assert_eq!(part_one(DATA), 71708);
+    }
+
+    #[test]
+    fn test_two() {
+        assert_eq!(part_two(DATA), 34726);
     }
 }

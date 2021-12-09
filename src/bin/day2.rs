@@ -1,48 +1,86 @@
-use aoc2021::util;
+use crate::Command::{Down, Forward, Up};
+
+const DATA: &str = include_str!("../inputs/day2.txt");
+
+enum Command {
+    Forward(i32),
+    Down(i32),
+    Up(i32),
+}
+impl From<&str> for Command {
+    fn from(line: &str) -> Self {
+        let split_instruction: Vec<&str> = line.split_whitespace().collect();
+        let (direction, amount) = (split_instruction[0], split_instruction[1]);
+        let n = amount.parse().unwrap();
+        match direction {
+            "forward" => Forward(n),
+            "down" => Down(n),
+            "up" => Up(n),
+            _ => panic!(),
+        }
+    }
+}
 
 fn main() {
-    let input = util::read_lines("inputs/day2.txt");
-    let instructions: Vec<(&str, i64)> = input
-        .lines()
-        .map(|line| {
-            let split_instruction: Vec<&str> = line.split_whitespace().collect();
-            (split_instruction[0], split_instruction[1].parse().unwrap())
-        })
-        .collect();
-    part_one(&instructions);
-    part_two(&instructions);
+    println!("part 1: {}", part_one(DATA));
+    println!("part 2: {}", part_two(DATA));
 }
 
-fn part_one(instructions: &[(&str, i64)]) {
-    let mut depth_horizontal = (0, 0);
+fn part_one(data: &str) -> i32 {
+    let mut depth = 0;
+    let mut horizontal = 0;
 
-    for instruction in instructions {
-        match instruction.0 {
-            "forward" => depth_horizontal.1 += instruction.1,
-            "up" => depth_horizontal.0 -= instruction.1,
-            "down" => depth_horizontal.0 += instruction.1,
-            _ => panic!(),
+    for command in data.lines().map(Command::from) {
+        match command {
+            Forward(n) => horizontal += n,
+            Down(n) => depth += n,
+            Up(n) => depth -= n,
         }
     }
-    println!("Solution is {}", depth_horizontal.0 * depth_horizontal.1);
+    horizontal * depth
 }
 
-fn part_two(instructions: &[(&str, i64)]) {
-    let mut depth_horizontal_aim = (0, 0, 0);
+fn part_two(data: &str) -> i32 {
+    let mut depth = 0;
+    let mut horizontal = 0;
+    let mut aim = 0;
 
-    for instruction in instructions {
-        match instruction.0 {
-            "forward" => {
-                depth_horizontal_aim.1 += instruction.1;
-                depth_horizontal_aim.0 += depth_horizontal_aim.2 * instruction.1;
+    for command in data.lines().map(Command::from) {
+        match command {
+            Forward(n) => {
+                horizontal += n;
+                depth += aim * n
             }
-            "up" => depth_horizontal_aim.2 -= instruction.1,
-            "down" => depth_horizontal_aim.2 += instruction.1,
-            _ => panic!(),
+            Down(n) => aim += n,
+            Up(n) => aim -= n,
         }
     }
-    println!(
-        "Solution is {}",
-        depth_horizontal_aim.0 * depth_horizontal_aim.1
-    );
+    horizontal * depth
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const SAMPLE_DATA: &str = include_str!("../inputs/day2_sample.txt");
+
+    #[test]
+    fn test_one_sample() {
+        assert_eq!(part_one(SAMPLE_DATA), 150);
+    }
+
+    #[test]
+    fn test_two_sample() {
+        assert_eq!(part_two(SAMPLE_DATA), 900);
+    }
+
+    #[test]
+    fn test_one() {
+        assert_eq!(part_one(DATA), 1694130);
+    }
+
+    #[test]
+    fn test_two() {
+        assert_eq!(part_two(DATA), 1698850445);
+    }
 }
