@@ -1,5 +1,8 @@
 [Link](https://www.markdownguide.org/basic-syntax/) to Markdown syntax
 
+### Day eight
+First draft not incredible. Many hardships with references in a Struct.
+
 ### Day seven
 Problem differentiating between arithmetic and geometric suite... 
 
