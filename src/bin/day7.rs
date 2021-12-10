@@ -12,7 +12,7 @@ fn part_one(data: &str) -> i32 {
         .collect();
     let min = *positions.iter().min().unwrap();
     let max = *positions.iter().max().unwrap();
-    let answer: i32 = (min..=max)
+    (min..=max)
         .map(|target| {
             positions
                 .iter()
@@ -20,8 +20,7 @@ fn part_one(data: &str) -> i32 {
                 .sum()
         })
         .min()
-        .unwrap();
-    answer
+        .unwrap()
 }
 
 fn part_two(data: &str) -> i32 {
@@ -31,7 +30,7 @@ fn part_two(data: &str) -> i32 {
         .collect();
     let min = *positions.iter().min().unwrap();
     let max = *positions.iter().max().unwrap();
-    let answer: i32 = (min..=max)
+    (min..=max)
         .map(|target| {
             positions
                 .iter()
@@ -42,8 +41,7 @@ fn part_two(data: &str) -> i32 {
                 .sum()
         })
         .min()
-        .unwrap();
-    answer
+        .unwrap()
 }
 
 #[cfg(test)]
