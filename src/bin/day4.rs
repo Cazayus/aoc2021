@@ -13,9 +13,10 @@ impl Board {
         if input.len() != 5 {
             panic!()
         }
-        for (i, &value) in input.iter().enumerate().take(5) {
-            self.content[i + 5 * line_index] = (value, false);
-        }
+        input
+            .iter()
+            .enumerate()
+            .for_each(|(i, &value)| self.content[i + 5 * line_index] = (value, false))
     }
     fn set_true(&mut self, instruction: i32) {
         self.content.iter_mut().for_each(|mut content| {
@@ -38,8 +39,7 @@ impl Board {
         let count: i32 = self
             .content
             .iter()
-            .filter(|element| !element.1)
-            .map(|element| element.0)
+            .map(|element| if element.1 { 0 } else { element.0 })
             .sum();
         count * instruction
     }
@@ -50,7 +50,7 @@ fn main() {
     println!("part 2: {}", part_two(DATA));
 }
 
-fn part_one(data: &str) -> i32 {
+fn parse_data(data: &str) -> (Vec<i32>, Vec<Board>) {
     let lines = data.lines().collect::<Vec<&str>>();
     let mut lines = lines.iter();
     let instructions: Vec<i32> = lines
@@ -77,6 +77,11 @@ fn part_one(data: &str) -> i32 {
             break;
         }
     }
+    (instructions, boards)
+}
+
+fn part_one(data: &str) -> i32 {
+    let (instructions, mut boards) = parse_data(data);
     for instruction in instructions {
         for board in boards.iter_mut() {
             board.set_true(instruction);
@@ -89,32 +94,7 @@ fn part_one(data: &str) -> i32 {
 }
 
 fn part_two(data: &str) -> i32 {
-    let lines = data.lines().collect::<Vec<&str>>();
-    let mut lines = lines.iter();
-    let instructions: Vec<i32> = lines
-        .next()
-        .unwrap()
-        .split(',')
-        .map(|value| value.parse().unwrap())
-        .collect();
-    let mut boards: Vec<Board> = Vec::new();
-    loop {
-        let next = lines.next();
-        if next != None {
-            let next = next.unwrap();
-            if next.is_empty() {
-                let mut board = Board {
-                    content: [(-1, false); 25],
-                };
-                for line_index in 0..5 {
-                    board.set_line(lines.next().unwrap(), line_index);
-                }
-                boards.push(board)
-            }
-        } else {
-            break;
-        }
-    }
+    let (instructions, mut boards) = parse_data(data);
     for instruction in instructions {
         for board in boards.iter_mut() {
             board.set_true(instruction);
