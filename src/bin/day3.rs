@@ -5,64 +5,71 @@ fn main() {
     println!("part 2: {}", part_two(DATA));
 }
 
-fn find_most_common_bit_as_vec(data: &Vec<&str>) -> Vec<char> {
-    let line_length = data[0].len();
-    let mut output: Vec<char> = Vec::new();
-    for index in 0..line_length {
-        let sum: i32 = data
-            .iter()
-            .map(|b| b[index..index + 1].parse::<i32>().unwrap())
-            .sum();
-        if sum as f64 >= data.len() as f64 / 2.0 {
-            output.push('1');
-        } else {
-            output.push('0');
-        }
-    }
-    output
+fn parse_data(data: &str) -> Vec<Vec<bool>> {
+    data.lines()
+        .map(|line| line.chars().map(|char| char == '1').collect())
+        .collect()
 }
 
-fn convert_most_common_to_least_common(most_common: &Vec<char>) -> Vec<char> {
-    return most_common
-        .iter()
-        .map(|&c| if c == '1' { '0' } else { '1' })
-        .collect();
+fn find_most_common_bit_as_vec(data: &[Vec<bool>]) -> Vec<bool> {
+    let line_length = data[0].len();
+    (0..line_length)
+        .map(|index| {
+            let (ones, zeroes): (Vec<bool>, Vec<bool>) =
+                data.iter().map(|line| line[index]).partition(|&bit| bit);
+            ones.len() >= zeroes.len()
+        })
+        .collect()
+}
+
+fn convert_most_common_to_least_common(most_common: &[bool]) -> Vec<bool> {
+    return most_common.iter().map(|&bit| !bit).collect();
+}
+
+fn convert_vec_bit_to_i32(vec_bit: &[bool]) -> i32 {
+    return i32::from_str_radix(
+        vec_bit
+            .iter()
+            .map(|&bit| if bit { '1' } else { '0' })
+            .collect::<String>()
+            .as_str(),
+        2,
+    )
+    .unwrap();
 }
 
 fn part_one(data: &str) -> i32 {
-    let most_common_bits = find_most_common_bit_as_vec(&data.lines().collect());
+    let data = parse_data(data);
+    let most_common_bits = find_most_common_bit_as_vec(&data);
     let least_common_bits = convert_most_common_to_least_common(&most_common_bits);
-    let gamma =
-        i32::from_str_radix(most_common_bits.iter().collect::<String>().as_str(), 2).unwrap();
-    let epsilon =
-        i32::from_str_radix(least_common_bits.iter().collect::<String>().as_str(), 2).unwrap();
+    let gamma = convert_vec_bit_to_i32(&most_common_bits);
+    let epsilon = convert_vec_bit_to_i32(&least_common_bits);
     gamma * epsilon
 }
 
 fn part_two(data: &str) -> i32 {
+    let data = parse_data(data);
     let mut current_bit_under_scrutiny = 0;
-    let mut mutable_lines: Vec<&str> = data.lines().collect::<Vec<&str>>().to_vec();
+    let mut mutable_lines: Vec<Vec<bool>> = data.clone();
     while mutable_lines.len() > 1 {
         let most_common_bits = find_most_common_bit_as_vec(&mutable_lines);
         mutable_lines.retain(|line| {
-            line.chars().nth(current_bit_under_scrutiny).unwrap()
-                == most_common_bits[current_bit_under_scrutiny]
+            line[current_bit_under_scrutiny] == most_common_bits[current_bit_under_scrutiny]
         });
         current_bit_under_scrutiny += 1;
     }
-    let oxygen = i32::from_str_radix(mutable_lines.first().unwrap(), 2).unwrap();
+    let oxygen = convert_vec_bit_to_i32(mutable_lines.first().unwrap());
     let mut current_bit_under_scrutiny = 0;
-    let mut mutable_lines: Vec<&str> = data.lines().collect::<Vec<&str>>().to_vec();
+    let mut mutable_lines: Vec<Vec<bool>> = data;
     while mutable_lines.len() > 1 {
         let least_common_bit =
             convert_most_common_to_least_common(&find_most_common_bit_as_vec(&mutable_lines));
         mutable_lines.retain(|line| {
-            line.chars().nth(current_bit_under_scrutiny).unwrap()
-                == least_common_bit[current_bit_under_scrutiny]
+            line[current_bit_under_scrutiny] == least_common_bit[current_bit_under_scrutiny]
         });
         current_bit_under_scrutiny += 1;
     }
-    let co2 = i32::from_str_radix(mutable_lines.first().unwrap(), 2).unwrap();
+    let co2 = convert_vec_bit_to_i32(mutable_lines.first().unwrap());
     oxygen * co2
 }
 
