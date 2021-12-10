@@ -1,10 +1,17 @@
 use std::cmp;
 use std::collections::HashMap;
+use std::iter::{repeat, Chain};
+use std::ops::RangeInclusive;
 
 const DATA: &str = include_str!("../inputs/day5.txt");
 
 struct Grid {
     content: HashMap<[i32; 2], i32>,
+}
+
+// we don't know which one is higher so we iterate both ways
+fn route1d(start: i32, stop: i32) -> Chain<RangeInclusive<i32>, RangeInclusive<i32>> {
+    (start..=stop).chain(stop..=start)
 }
 
 impl Grid {
@@ -14,20 +21,14 @@ impl Grid {
         }
         if input[0] == input[2] {
             // column
-            let min = cmp::min(input[1], input[3]);
-            let max = cmp::max(input[1], input[3]);
-            for i in min..=max {
-                let count = self.content.entry([input[0], i]).or_insert(0);
-                *count += 1;
-            }
+            repeat(input[0])
+                .zip(route1d(input[1], input[3]))
+                .for_each(|(x, y)| *self.content.entry([x, y]).or_insert(0) += 1);
         } else if input[1] == input[3] {
             // line
-            let min = cmp::min(input[0], input[2]);
-            let max = cmp::max(input[0], input[2]);
-            for i in min..=max {
-                let count = self.content.entry([i, input[1]]).or_insert(0);
-                *count += 1;
-            }
+            route1d(input[0], input[2])
+                .zip(repeat(input[1]))
+                .for_each(|(x, y)| *self.content.entry([x, y]).or_insert(0) += 1);
         }
     }
     fn fill_diagonal(&mut self, input: &[i32]) {
@@ -38,7 +39,7 @@ impl Grid {
             || input[2] - input[0] == -(input[3] - input[1])
         {
             // a * x + b
-            // a= (yb - ya) / (xb - xa) = 1 ou -1 pour une diagonale
+            // a = (yb - ya) / (xb - xa) = 1 ou -1 pour une diagonale
             // b = ya - a * xa
             let x_min = cmp::min(input[0], input[2]);
             let x_max = cmp::max(input[0], input[2]);
@@ -58,7 +59,7 @@ fn main() {
     println!("part 2: {}", part_two(DATA));
 }
 
-fn part_one(data: &str) -> usize {
+fn parse_data(data: &str) -> (Vec<Vec<i32>>, Grid) {
     let lines: Vec<Vec<i32>> = data
         .lines()
         .map(|line| {
@@ -68,9 +69,14 @@ fn part_one(data: &str) -> usize {
                 .collect::<Vec<i32>>()
         })
         .collect();
-    let mut grid = Grid {
+    let grid = Grid {
         content: HashMap::new(),
     };
+    (lines, grid)
+}
+
+fn part_one(data: &str) -> usize {
+    let (lines, mut grid) = parse_data(data);
     for line in lines {
         grid.fill_grid(&line);
     }
@@ -79,18 +85,7 @@ fn part_one(data: &str) -> usize {
 }
 
 fn part_two(data: &str) -> usize {
-    let lines: Vec<Vec<i32>> = data
-        .lines()
-        .map(|line| {
-            line.split(" -> ")
-                .flat_map(|coord| coord.split(','))
-                .map(|value| value.parse::<i32>().unwrap())
-                .collect::<Vec<i32>>()
-        })
-        .collect();
-    let mut grid = Grid {
-        content: HashMap::new(),
-    };
+    let (lines, mut grid) = parse_data(data);
     for line in lines {
         grid.fill_grid(&line);
         grid.fill_diagonal(&line);
