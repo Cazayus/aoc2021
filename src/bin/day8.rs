@@ -2,8 +2,6 @@ use std::collections::HashMap;
 
 const DATA: &str = include_str!("../inputs/day8.txt");
 
-// check this https://www.reddit.com/r/adventofcode/comments/rc5s3z/2021_day_8_part_2_a_simple_fast_and_deterministic/
-
 //  Combination list:
 //  0:      1:      2:      3:      4:
 //  aaaa    ....    aaaa    aaaa    ....
@@ -50,137 +48,82 @@ const DATA: &str = include_str!("../inputs/day8.txt");
 // celui à 5 segments qui est contenu dans 6 est 5
 // le dernier 5 est 2
 
-struct Line {
-    before: Vec<String>,
-    after: Vec<String>,
-    seg_list_to_value: HashMap<String, i32>,
-    after_decoded: Vec<i32>,
-}
-
-impl Line {
-    fn decipher(&mut self) {
-        for id in self.before.iter() {
-            match id.len() {
-                2 => self.seg_list_to_value.insert(id.to_string(), 1),
-                3 => self.seg_list_to_value.insert(id.to_string(), 7),
-                4 => self.seg_list_to_value.insert(id.to_string(), 4),
-                7 => self.seg_list_to_value.insert(id.to_string(), 8),
-                _ => None,
-            };
-        }
-        for id in self.before.iter() {
-            if id.len() == 6 && self.seg_list_contains(id, 4) {
-                self.seg_list_to_value.insert(id.to_string(), 9);
-            }
-            if id.len() == 5 && self.seg_list_contains(id, 1) {
-                self.seg_list_to_value.insert(id.to_string(), 3);
-            }
-        }
-        for id in self.before.iter() {
-            if id.len() == 6 && !self.seg_list_contains(id, 7) {
-                self.seg_list_to_value.insert(id.to_string(), 6);
-            }
-        }
-        for id in self.before.iter() {
-            if id.len() == 5 && self.seg_list_is_contained_by(id, 6) {
-                self.seg_list_to_value.insert(id.to_string(), 5);
-            }
-        }
-        for id in self.before.iter() {
-            if id.len() == 6 && !self.seg_list_to_value.contains_key(id) {
-                self.seg_list_to_value.insert(id.to_string(), 0);
-            }
-            if id.len() == 5 && !self.seg_list_to_value.contains_key(id) {
-                self.seg_list_to_value.insert(id.to_string(), 2);
-            }
-        }
-        self.after_decoded = self
-            .after
-            .iter()
-            .map(|seg| *self.seg_list_to_value.get(seg).unwrap())
-            .collect()
-    }
-
-    fn seg_list_contains(&self, seg_list: &str, to_contains: i32) -> bool {
-        self.seg_list_to_value
-            .iter()
-            .find_map(|(key, &val)| if val == to_contains { Some(key) } else { None })
-            .unwrap()
-            .chars()
-            .all(|char| seg_list.contains(char))
-    }
-
-    fn seg_list_is_contained_by(&self, seg_list: &str, container: i32) -> bool {
-        let container = self
-            .seg_list_to_value
-            .iter()
-            .find_map(|(key, &val)| if val == container { Some(key) } else { None })
-            .unwrap();
-        seg_list.chars().all(|char| container.contains(char))
-    }
-}
+// autre solution implémentée ici
+// en se basant sur https://www.reddit.com/r/adventofcode/comments/rc5s3z/2021_day_8_part_2_a_simple_fast_and_deterministic/
 
 fn main() {
     println!("part 1: {}", part_one(DATA));
     println!("part 2: {}", part_two(DATA));
 }
 
-fn extract_sorted_seg_list(split_line: &str) -> Vec<String> {
-    split_line.split_whitespace().map(sort_string).collect()
+fn compute_char_occurrences_count(normal_digits: &str) -> HashMap<char, i32> {
+    let mut char_occurrence_count: HashMap<char, i32> = HashMap::new();
+    normal_digits.split_whitespace().for_each(|digit| {
+        digit
+            .chars()
+            .for_each(|char| *char_occurrence_count.entry(char).or_insert(0) += 1)
+    });
+    char_occurrence_count
 }
 
-fn sort_string(elem: &str) -> String {
-    let mut temp_vec: Vec<char> = elem.chars().collect();
-    temp_vec.sort_unstable();
-    temp_vec.into_iter().collect()
+fn digit_hash(
+    normal_digits: &str,
+    char_occurrence_count: &HashMap<char, i32>,
+) -> HashMap<i32, usize> {
+    normal_digits
+        .split_whitespace()
+        .map(|digit| {
+            digit
+                .chars()
+                .map(|char| char_occurrence_count.get(&char).unwrap())
+                .sum::<i32>()
+        })
+        .enumerate()
+        .map(|(index, hash)| (hash, index))
+        .collect()
+}
+
+fn parse_data(data: &str) -> Vec<Vec<usize>> {
+    let normal_digits = "abcefg cf acdeg acdfg bcdf abdfg abdefg acf abcdefg abcdfg";
+    let normal_digit_hash = digit_hash(
+        normal_digits,
+        &compute_char_occurrences_count(normal_digits),
+    );
+    data.lines()
+        .map(|line| line.split(" | "))
+        .map(|mut split_line| {
+            let before = split_line.next().unwrap();
+            let before_char_occurrences_count = compute_char_occurrences_count(before);
+            let after = split_line.next().unwrap();
+            after
+                .split_whitespace()
+                .map(|digit| {
+                    let digit_hash = digit
+                        .chars()
+                        .map(|char| *before_char_occurrences_count.get(&char).unwrap())
+                        .sum();
+                    *normal_digit_hash.get(&digit_hash).unwrap()
+                })
+                .collect::<Vec<usize>>()
+        })
+        .collect::<Vec<Vec<usize>>>()
 }
 
 fn part_one(data: &str) -> usize {
-    let input: Vec<Line> = data
-        .lines()
-        .map(|line| line.split(" | "))
-        .map(|mut split_line| {
-            let mut line = Line {
-                seg_list_to_value: Default::default(),
-                before: extract_sorted_seg_list(split_line.next().unwrap()),
-                after: extract_sorted_seg_list(split_line.next().unwrap()),
-                after_decoded: vec![],
-            };
-            line.decipher();
-            line
-        })
-        .collect();
-    input
+    let decrypted_digits_after_pipe = parse_data(data);
+    decrypted_digits_after_pipe
         .iter()
-        .flat_map(|line| &line.after_decoded)
+        .flatten()
         .filter(|&&seg| seg == 1 || seg == 4 || seg == 7 || seg == 8)
         .count()
 }
 
-fn part_two(data: &str) -> i32 {
-    let input: Vec<Line> = data
-        .lines()
-        .map(|line| line.split(" | "))
-        .map(|mut split_line| {
-            let mut line = Line {
-                seg_list_to_value: Default::default(),
-                before: extract_sorted_seg_list(split_line.next().unwrap()),
-                after: extract_sorted_seg_list(split_line.next().unwrap()),
-                after_decoded: vec![],
-            };
-            line.decipher();
-            line
-        })
-        .collect();
-    input
+fn part_two(data: &str) -> usize {
+    let decrypted_digits_after_pipe = parse_data(data);
+    decrypted_digits_after_pipe
         .iter()
-        .map(|line| {
-            line.after_decoded[0] * 1000
-                + line.after_decoded[1] * 100
-                + line.after_decoded[2] * 10
-                + line.after_decoded[3]
-        })
-        .sum::<i32>()
+        .map(|line| line[0] * 1000 + line[1] * 100 + line[2] * 10 + line[3])
+        .sum::<usize>()
 }
 
 #[cfg(test)]
