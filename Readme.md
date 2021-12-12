@@ -8,6 +8,9 @@
 
 [AOC subreddit](https://www.reddit.com/r/adventofcode/)
 
+### Day ten
+Trivial with the LIFO stack
+
 ### Day nine
 Solution looks elegant to me
 
