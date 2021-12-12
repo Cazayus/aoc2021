@@ -2,11 +2,14 @@
 
 [Nice Rust Repo](https://github.com/Crazytieguy/advent-2021)
 
-[Florian](https://github.com/flothesof/advent_of_code2021/tree/main/day08/src)
+[Florian](https://github.com/flothesof/advent_of_code2021)
 
 [Thibaud](https://github.com/forthib/aoc2021)
 
 [AOC subreddit](https://www.reddit.com/r/adventofcode/)
+
+### Day nine
+Solution looks elegant to me
 
 ### Day eight
 First draft not incredible. Many hardships with references in a Struct.
