@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 const DATA: &str = include_str!("../inputs/day10.txt");
 
 fn main() {
@@ -45,26 +47,22 @@ fn compute_error_score(line: &str, stack: &mut Vec<char>) -> i64 {
 }
 
 fn part_two(data: &str) -> i64 {
+    let char_to_score = HashMap::from([('(', 1), ('[', 2), ('{', 3), ('<', 4)]);
     let mut scores: Vec<i64> = data
         .lines()
         .filter_map(|line| {
             let mut stack: Vec<char> = vec![];
-            let mut output = compute_error_score(line, &mut stack);
-            if output == 0 {
-                stack.iter().rev().for_each(|&char| {
-                    output *= 5;
-                    match char {
-                        '(' => output += 1,
-                        '[' => output += 2,
-                        '{' => output += 3,
-                        '<' => output += 4,
-                        _ => panic!(),
-                    }
-                });
-                Some(output)
+            if compute_error_score(line, &mut stack) == 0 {
+                Some(stack)
             } else {
                 None
             }
+        })
+        .map(|stack| {
+            stack
+                .into_iter()
+                .rev()
+                .fold(0, |score, char| score * 5 + char_to_score[&char])
         })
         .collect();
     scores.sort_unstable();
