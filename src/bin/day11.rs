@@ -41,8 +41,8 @@ fn advance_step(step: i32, grid: &mut HashMap<(i32, i32), i32>) -> usize {
     let mut flashes = 0;
     for _ in 0..step {
         grid.values_mut().for_each(|value| *value += 1);
-        let mut flashing_octopuses: Vec<(i32, i32)> = find_flashing_octopuses(&grid);
-        while flashing_octopuses.len() > 0 {
+        let mut flashing_octopuses: Vec<(i32, i32)> = find_flashing_octopuses(grid);
+        while !flashing_octopuses.is_empty() {
             flashes += flashing_octopuses.len();
             flashing_octopuses
                 .iter()
@@ -57,7 +57,7 @@ fn advance_step(step: i32, grid: &mut HashMap<(i32, i32), i32>) -> usize {
                     }
                 })
             });
-            flashing_octopuses = find_flashing_octopuses(&grid);
+            flashing_octopuses = find_flashing_octopuses(grid);
         }
         grid.values_mut().for_each(|value| {
             if *value == -1 {

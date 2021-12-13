@@ -66,7 +66,7 @@ fn compute_error_score(line: &str, stack: &mut Vec<char>) -> i64 {
             _ => panic!(),
         }
     }
-    return 0;
+    0
 }
 
 #[cfg(test)]
