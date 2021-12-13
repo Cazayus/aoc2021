@@ -9,11 +9,6 @@ struct Grid {
     content: HashMap<[i32; 2], i32>,
 }
 
-// we don't know which one is higher so we iterate both ways
-fn route1d(start: i32, stop: i32) -> Chain<RangeInclusive<i32>, RangeInclusive<i32>> {
-    (start..=stop).chain(stop..=start)
-}
-
 impl Grid {
     fn fill_grid(&mut self, input: &[i32]) {
         if input.len() != 4 {
@@ -59,22 +54,6 @@ fn main() {
     println!("part 2: {}", part_two(DATA));
 }
 
-fn parse_data(data: &str) -> (Vec<Vec<i32>>, Grid) {
-    let lines: Vec<Vec<i32>> = data
-        .lines()
-        .map(|line| {
-            line.split(" -> ")
-                .flat_map(|coord| coord.split(','))
-                .map(|value| value.parse::<i32>().unwrap())
-                .collect::<Vec<i32>>()
-        })
-        .collect();
-    let grid = Grid {
-        content: HashMap::new(),
-    };
-    (lines, grid)
-}
-
 fn part_one(data: &str) -> usize {
     let (lines, mut grid) = parse_data(data);
     for line in lines {
@@ -92,6 +71,27 @@ fn part_two(data: &str) -> usize {
     }
     grid.content.retain(|_, &mut value| value > 1);
     grid.content.len()
+}
+
+fn parse_data(data: &str) -> (Vec<Vec<i32>>, Grid) {
+    let lines: Vec<Vec<i32>> = data
+        .lines()
+        .map(|line| {
+            line.split(" -> ")
+                .flat_map(|coord| coord.split(','))
+                .map(|value| value.parse::<i32>().unwrap())
+                .collect::<Vec<i32>>()
+        })
+        .collect();
+    let grid = Grid {
+        content: HashMap::new(),
+    };
+    (lines, grid)
+}
+
+// we don't know which one is higher so we iterate both ways
+fn route1d(start: i32, stop: i32) -> Chain<RangeInclusive<i32>, RangeInclusive<i32>> {
+    (start..=stop).chain(stop..=start)
 }
 
 #[cfg(test)]

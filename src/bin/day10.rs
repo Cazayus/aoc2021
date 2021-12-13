@@ -16,6 +16,29 @@ fn part_one(data: &str) -> i64 {
         .sum()
 }
 
+fn part_two(data: &str) -> i64 {
+    let char_to_score = HashMap::from([('(', 1), ('[', 2), ('{', 3), ('<', 4)]);
+    let mut scores: Vec<i64> = data
+        .lines()
+        .filter_map(|line| {
+            let mut stack: Vec<char> = vec![];
+            if compute_error_score(line, &mut stack) == 0 {
+                Some(stack)
+            } else {
+                None
+            }
+        })
+        .map(|stack| {
+            stack
+                .into_iter()
+                .rev()
+                .fold(0, |score, char| score * 5 + char_to_score[&char])
+        })
+        .collect();
+    scores.sort_unstable();
+    scores[scores.len() / 2]
+}
+
 fn compute_error_score(line: &str, stack: &mut Vec<char>) -> i64 {
     for char in line.chars() {
         match char {
@@ -44,29 +67,6 @@ fn compute_error_score(line: &str, stack: &mut Vec<char>) -> i64 {
         }
     }
     return 0;
-}
-
-fn part_two(data: &str) -> i64 {
-    let char_to_score = HashMap::from([('(', 1), ('[', 2), ('{', 3), ('<', 4)]);
-    let mut scores: Vec<i64> = data
-        .lines()
-        .filter_map(|line| {
-            let mut stack: Vec<char> = vec![];
-            if compute_error_score(line, &mut stack) == 0 {
-                Some(stack)
-            } else {
-                None
-            }
-        })
-        .map(|stack| {
-            stack
-                .into_iter()
-                .rev()
-                .fold(0, |score, char| score * 5 + char_to_score[&char])
-        })
-        .collect();
-    scores.sort_unstable();
-    scores[scores.len() / 2]
 }
 
 #[cfg(test)]

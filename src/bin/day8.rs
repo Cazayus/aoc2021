@@ -56,31 +56,21 @@ fn main() {
     println!("part 2: {}", part_two(DATA));
 }
 
-fn compute_char_occurrences_count(normal_digits: &str) -> HashMap<char, i32> {
-    let mut char_occurrence_count: HashMap<char, i32> = HashMap::new();
-    normal_digits.split_whitespace().for_each(|digit| {
-        digit
-            .chars()
-            .for_each(|char| *char_occurrence_count.entry(char).or_insert(0) += 1)
-    });
-    char_occurrence_count
+fn part_one(data: &str) -> usize {
+    let decrypted_digits_after_pipe = parse_data(data);
+    decrypted_digits_after_pipe
+        .iter()
+        .flatten()
+        .filter(|&&seg| seg == 1 || seg == 4 || seg == 7 || seg == 8)
+        .count()
 }
 
-fn digit_hash(
-    normal_digits: &str,
-    char_occurrence_count: &HashMap<char, i32>,
-) -> HashMap<i32, usize> {
-    normal_digits
-        .split_whitespace()
-        .map(|digit| {
-            digit
-                .chars()
-                .map(|char| char_occurrence_count.get(&char).unwrap())
-                .sum::<i32>()
-        })
-        .enumerate()
-        .map(|(index, hash)| (hash, index))
-        .collect()
+fn part_two(data: &str) -> usize {
+    let decrypted_digits_after_pipe = parse_data(data);
+    decrypted_digits_after_pipe
+        .iter()
+        .map(|line| line[0] * 1000 + line[1] * 100 + line[2] * 10 + line[3])
+        .sum::<usize>()
 }
 
 fn parse_data(data: &str) -> Vec<Vec<usize>> {
@@ -109,21 +99,31 @@ fn parse_data(data: &str) -> Vec<Vec<usize>> {
         .collect::<Vec<Vec<usize>>>()
 }
 
-fn part_one(data: &str) -> usize {
-    let decrypted_digits_after_pipe = parse_data(data);
-    decrypted_digits_after_pipe
-        .iter()
-        .flatten()
-        .filter(|&&seg| seg == 1 || seg == 4 || seg == 7 || seg == 8)
-        .count()
+fn compute_char_occurrences_count(normal_digits: &str) -> HashMap<char, i32> {
+    let mut char_occurrence_count: HashMap<char, i32> = HashMap::new();
+    normal_digits.split_whitespace().for_each(|digit| {
+        digit
+            .chars()
+            .for_each(|char| *char_occurrence_count.entry(char).or_insert(0) += 1)
+    });
+    char_occurrence_count
 }
 
-fn part_two(data: &str) -> usize {
-    let decrypted_digits_after_pipe = parse_data(data);
-    decrypted_digits_after_pipe
-        .iter()
-        .map(|line| line[0] * 1000 + line[1] * 100 + line[2] * 10 + line[3])
-        .sum::<usize>()
+fn digit_hash(
+    normal_digits: &str,
+    char_occurrence_count: &HashMap<char, i32>,
+) -> HashMap<i32, usize> {
+    normal_digits
+        .split_whitespace()
+        .map(|digit| {
+            digit
+                .chars()
+                .map(|char| char_occurrence_count.get(&char).unwrap())
+                .sum::<i32>()
+        })
+        .enumerate()
+        .map(|(index, hash)| (hash, index))
+        .collect()
 }
 
 #[cfg(test)]

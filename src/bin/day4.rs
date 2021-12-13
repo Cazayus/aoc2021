@@ -50,36 +50,6 @@ fn main() {
     println!("part 2: {}", part_two(DATA));
 }
 
-fn parse_data(data: &str) -> (Vec<i32>, Vec<Board>) {
-    let lines = data.lines().collect::<Vec<&str>>();
-    let mut lines = lines.iter();
-    let instructions: Vec<i32> = lines
-        .next()
-        .unwrap()
-        .split(',')
-        .map(|value| value.parse().unwrap())
-        .collect();
-    let mut boards: Vec<Board> = Vec::new();
-    loop {
-        let next = lines.next();
-        if next != None {
-            let next = next.unwrap();
-            if next.is_empty() {
-                let mut board = Board {
-                    content: [(-1, false); 25],
-                };
-                for line_index in 0..5 {
-                    board.set_line(lines.next().unwrap(), line_index);
-                }
-                boards.push(board)
-            }
-        } else {
-            break;
-        }
-    }
-    (instructions, boards)
-}
-
 fn part_one(data: &str) -> i32 {
     let (instructions, mut boards) = parse_data(data);
     for instruction in instructions {
@@ -108,6 +78,36 @@ fn part_two(data: &str) -> i32 {
         boards.retain(|board| !board.is_completed());
     }
     panic!();
+}
+
+fn parse_data(data: &str) -> (Vec<i32>, Vec<Board>) {
+    let lines = data.lines().collect::<Vec<&str>>();
+    let mut lines = lines.iter();
+    let instructions: Vec<i32> = lines
+        .next()
+        .unwrap()
+        .split(',')
+        .map(|value| value.parse().unwrap())
+        .collect();
+    let mut boards: Vec<Board> = Vec::new();
+    loop {
+        let next = lines.next();
+        if next != None {
+            let next = next.unwrap();
+            if next.is_empty() {
+                let mut board = Board {
+                    content: [(-1, false); 25],
+                };
+                for line_index in 0..5 {
+                    board.set_line(lines.next().unwrap(), line_index);
+                }
+                boards.push(board)
+            }
+        } else {
+            break;
+        }
+    }
+    (instructions, boards)
 }
 
 #[cfg(test)]

@@ -5,39 +5,6 @@ fn main() {
     println!("part 2: {}", part_two(DATA));
 }
 
-fn parse_data(data: &str) -> Vec<Vec<bool>> {
-    data.lines()
-        .map(|line| line.chars().map(|char| char == '1').collect())
-        .collect()
-}
-
-fn find_most_common_bit_as_vec(data: &[Vec<bool>]) -> Vec<bool> {
-    let line_length = data[0].len();
-    (0..line_length)
-        .map(|index| {
-            let (ones, zeroes): (Vec<bool>, Vec<bool>) =
-                data.iter().map(|line| line[index]).partition(|&bit| bit);
-            ones.len() >= zeroes.len()
-        })
-        .collect()
-}
-
-fn convert_most_common_to_least_common(most_common: &[bool]) -> Vec<bool> {
-    return most_common.iter().map(|&bit| !bit).collect();
-}
-
-fn convert_vec_bit_to_i32(vec_bit: &[bool]) -> i32 {
-    return i32::from_str_radix(
-        vec_bit
-            .iter()
-            .map(|&bit| if bit { '1' } else { '0' })
-            .collect::<String>()
-            .as_str(),
-        2,
-    )
-    .unwrap();
-}
-
 fn part_one(data: &str) -> i32 {
     let data = parse_data(data);
     let most_common_bits = find_most_common_bit_as_vec(&data);
@@ -71,6 +38,39 @@ fn part_two(data: &str) -> i32 {
     }
     let co2 = convert_vec_bit_to_i32(mutable_lines.first().unwrap());
     oxygen * co2
+}
+
+fn parse_data(data: &str) -> Vec<Vec<bool>> {
+    data.lines()
+        .map(|line| line.chars().map(|char| char == '1').collect())
+        .collect()
+}
+
+fn find_most_common_bit_as_vec(data: &[Vec<bool>]) -> Vec<bool> {
+    let line_length = data[0].len();
+    (0..line_length)
+        .map(|index| {
+            let (ones, zeroes): (Vec<bool>, Vec<bool>) =
+                data.iter().map(|line| line[index]).partition(|&bit| bit);
+            ones.len() >= zeroes.len()
+        })
+        .collect()
+}
+
+fn convert_most_common_to_least_common(most_common: &[bool]) -> Vec<bool> {
+    return most_common.iter().map(|&bit| !bit).collect();
+}
+
+fn convert_vec_bit_to_i32(vec_bit: &[bool]) -> i32 {
+    return i32::from_str_radix(
+        vec_bit
+            .iter()
+            .map(|&bit| if bit { '1' } else { '0' })
+            .collect::<String>()
+            .as_str(),
+        2,
+    )
+    .unwrap();
 }
 
 #[cfg(test)]
