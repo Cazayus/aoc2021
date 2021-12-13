@@ -8,6 +8,9 @@
 
 [AOC subreddit](https://www.reddit.com/r/adventofcode/)
 
+### Day eleven
+Nothing really hard
+
 ### Day ten
 Trivial with the LIFO stack
 
