@@ -8,6 +8,9 @@
 
 [AOC subreddit](https://www.reddit.com/r/adventofcode/)
 
+### Day thirteen
+Fun, but hard to do fully programmatically
+
 ### Day eleven
 Nothing really hard
 
