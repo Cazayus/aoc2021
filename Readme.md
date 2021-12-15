@@ -1,3 +1,4 @@
+
 [Link](https://www.markdownguide.org/basic-syntax/) to Markdown syntax
 
 [Nice Rust Repo](https://github.com/Crazytieguy/advent-2021)
@@ -7,6 +8,9 @@
 [Thibaud](https://github.com/forthib/aoc2021)
 
 [AOC subreddit](https://www.reddit.com/r/adventofcode/)
+
+### Day fourteen
+Naïve string replace solution explodes in part 2
 
 ### Day thirteen
 Fun, but hard to do fully programmatically
