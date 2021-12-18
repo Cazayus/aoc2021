@@ -1,6 +1,15 @@
 use std::collections::HashMap;
+use std::iter;
 
 const DATA: &str = include_str!("../inputs/day12.txt");
+const MAX_CAVES: usize = 12;
+
+struct Graph {
+    start_id: usize,
+    end_id: usize,
+    is_small: [bool; MAX_CAVES],
+    id_to_children: [Vec<usize>; MAX_CAVES],
+}
 
 fn main() {
     println!("part 1: {}", part_one(DATA));
@@ -8,17 +17,20 @@ fn main() {
 }
 
 fn part_one(data: &str) -> usize {
-    let caves_to_neighbors = parse_data(data);
-    count_path_to_end(&caves_to_neighbors, vec!["start"], "start", false)
+    let graph = parse_data(data);
+    count_path_to_end(&graph, [false; MAX_CAVES], graph.start_id, false)
 }
 
 fn part_two(data: &str) -> usize {
-    let caves_to_neighbors = parse_data(data);
-    count_path_to_end(&caves_to_neighbors, vec!["start"], "start", true)
+    let graph = parse_data(data);
+    count_path_to_end(&graph, [false; MAX_CAVES], graph.start_id, true)
 }
 
-fn parse_data(data: &str) -> HashMap<&str, Vec<&str>> {
-    data.lines()
+fn parse_data(data: &str) -> Graph {
+    let mut is_small = [false; MAX_CAVES];
+    let mut id_to_children: [Vec<usize>; MAX_CAVES] = Default::default();
+    let caves_to_children = data
+        .lines()
         .flat_map(|line| {
             let mut split_line = line.split('-');
             let before = split_line.next().unwrap();
@@ -29,39 +41,50 @@ fn parse_data(data: &str) -> HashMap<&str, Vec<&str>> {
         .fold(HashMap::new(), |mut acc, (k, v)| {
             acc.entry(k).or_insert_with(Vec::new).push(v);
             acc
-        })
+        });
+    let mut cave_to_id: HashMap<&str, usize> = HashMap::new();
+    for (id, &cave) in caves_to_children
+        .keys()
+        .chain(iter::once(&"end"))
+        .enumerate()
+    {
+        is_small[id] = cave.chars().all(char::is_lowercase);
+        cave_to_id.insert(cave, id);
+    }
+    for (cave, children) in caves_to_children {
+        id_to_children[cave_to_id[cave]] =
+            children.into_iter().map(|name| cave_to_id[name]).collect()
+    }
+    Graph {
+        start_id: cave_to_id["start"],
+        end_id: cave_to_id["end"],
+        is_small,
+        id_to_children,
+    }
 }
 
 fn count_path_to_end(
-    caves_to_neighbors: &HashMap<&str, Vec<&str>>,
-    current_path: Vec<&str>,
-    child: &str,
+    graph: &Graph,
+    mut visited: [bool; MAX_CAVES],
+    child: usize,
     second_visit_allowed: bool,
 ) -> usize {
-    if child == "end" {
+    if child == graph.end_id {
         return 1;
     }
-    caves_to_neighbors[child]
+    visited[child] = graph.is_small[child];
+    graph.id_to_children[child]
         .iter()
-        .filter(|&child| second_visit_allowed || can_revisit(&current_path, child))
-        .map(|child| {
-            let mut vec1 = current_path.to_vec();
-            vec1.push(child);
-            (child, vec1)
-        })
-        .map(|(child, path_to_child)| {
+        .filter(|&&child| second_visit_allowed || !visited[child])
+        .map(|&child| {
             count_path_to_end(
-                caves_to_neighbors,
-                path_to_child,
+                graph,
+                visited,
                 child,
-                second_visit_allowed && can_revisit(&current_path, child),
+                second_visit_allowed && !visited[child],
             )
         })
         .sum()
-}
-
-fn can_revisit(current_path: &[&str], child: &str) -> bool {
-    child.chars().all(|char| char.is_uppercase()) || !current_path.contains(&child)
 }
 
 #[cfg(test)]

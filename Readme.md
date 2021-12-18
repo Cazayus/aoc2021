@@ -9,6 +9,9 @@
 
 [AOC subreddit](https://www.reddit.com/r/adventofcode/)
 
+### Day twelve
+Easier with id than with string slices.
+
 ### Day fourteen
 Naïve string replace solution explodes in part 2
 
