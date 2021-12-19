@@ -92,15 +92,21 @@ mod tests {
     use super::*;
 
     const SAMPLE_DATA: &str = include_str!("../inputs/day12_sample.txt");
+    const SAMPLE_DATA1: &str = include_str!("../inputs/day12_sample1.txt");
+    const SAMPLE_DATA2: &str = include_str!("../inputs/day12_sample2.txt");
 
     #[test]
     fn test_one_sample() {
-        assert_eq!(part_one(SAMPLE_DATA), 226);
+        assert_eq!(part_one(SAMPLE_DATA), 10);
+        assert_eq!(part_one(SAMPLE_DATA1), 19);
+        assert_eq!(part_one(SAMPLE_DATA2), 226);
     }
 
     #[test]
     fn test_two_sample() {
-        assert_eq!(part_two(SAMPLE_DATA), 3509);
+        assert_eq!(part_two(SAMPLE_DATA), 36);
+        assert_eq!(part_two(SAMPLE_DATA1), 103);
+        assert_eq!(part_two(SAMPLE_DATA2), 3509);
     }
 
     #[test]
