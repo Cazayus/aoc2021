@@ -8,7 +8,7 @@ fn main() {
 fn part_one(data: &str) -> usize {
     data.lines()
         .map(|line| line.parse::<u32>().unwrap())
-        .collect::<Vec<u32>>()
+        .collect::<Vec<_>>()
         .windows(2)
         .filter(|window| window[0] < window[1])
         .count()
@@ -17,7 +17,7 @@ fn part_one(data: &str) -> usize {
 fn part_two(data: &str) -> usize {
     data.lines()
         .map(|line| line.parse::<u32>().unwrap())
-        .collect::<Vec<u32>>()
+        .collect::<Vec<_>>()
         .windows(4)
         .filter(|&w| w[0] < w[3])
         .count()

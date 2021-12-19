@@ -81,7 +81,7 @@ fn part_two(data: &str) -> i32 {
 }
 
 fn parse_data(data: &str) -> (Vec<i32>, Vec<Board>) {
-    let lines = data.lines().collect::<Vec<&str>>();
+    let lines = data.lines().collect::<Vec<_>>();
     let mut lines = lines.iter();
     let instructions: Vec<i32> = lines
         .next()

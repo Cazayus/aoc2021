@@ -37,7 +37,7 @@ fn parse_data(data: &str) -> HashMap<(i32, i32), u32> {
                 .map(|char| char.to_digit(10).unwrap())
                 .enumerate()
                 .map(|(j, value)| ((i as i32, j as i32), value))
-                .collect::<Vec<((i32, i32), u32)>>()
+                .collect::<Vec<_>>()
         })
         .collect()
 }

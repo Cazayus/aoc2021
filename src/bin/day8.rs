@@ -94,9 +94,9 @@ fn parse_data(data: &str) -> Vec<Vec<usize>> {
                         .sum();
                     *normal_digit_hash.get(&digit_hash).unwrap()
                 })
-                .collect::<Vec<usize>>()
+                .collect::<Vec<_>>()
         })
-        .collect::<Vec<Vec<usize>>>()
+        .collect::<Vec<_>>()
 }
 
 fn compute_char_occurrences_count(normal_digits: &str) -> HashMap<char, i32> {

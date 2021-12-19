@@ -80,7 +80,7 @@ fn parse_data(data: &str) -> (Vec<Vec<i32>>, Grid) {
             line.split(" -> ")
                 .flat_map(|coord| coord.split(','))
                 .map(|value| value.parse::<i32>().unwrap())
-                .collect::<Vec<i32>>()
+                .collect::<Vec<_>>()
         })
         .collect();
     let grid = Grid {
