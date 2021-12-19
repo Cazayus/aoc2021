@@ -59,6 +59,9 @@ fn dijkstra(graph: &HashMap<Point, u32>) -> u32 {
         if position == goal {
             return cost;
         }
+        if cost > dists[&position] {
+            continue;
+        }
         for (dx, dy) in [(0, 1), (1, 0), (-1, 0), (0, -1)] {
             let edge = (position.0 + dx, position.1 + dy);
             if let Some(edge_cost) = graph.get(&edge) {
