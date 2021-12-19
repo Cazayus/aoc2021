@@ -1,4 +1,5 @@
-use std::collections::{HashMap, HashSet};
+use std::cmp::Reverse;
+use std::collections::{BinaryHeap, HashMap};
 
 const DATA: &str = include_str!("../inputs/day15.txt");
 
@@ -9,73 +10,66 @@ fn main() {
     println!("part 2: {}", part_two(DATA));
 }
 
-fn part_one(data: &str) -> i32 {
+fn part_one(data: &str) -> u32 {
     let graph = parse_data(data);
     dijkstra(&graph)
 }
 
-fn part_two(data: &str) -> usize {
-    parse_data(data);
-    5
+fn part_two(data: &str) -> u32 {
+    let graph = parse_data(data);
+    let (tile_width, tile_height) = graph.keys().max().map(|(x, y)| (x + 1, y + 1)).unwrap();
+    let graph = graph
+        .into_iter()
+        .flat_map(|((x, y), risk)| {
+            (0..5)
+                .into_iter()
+                .flat_map(|tile_x| (0..5).into_iter().map(move |tile_y| (tile_x, tile_y)))
+                .map(move |(tile_x, tile_y)| {
+                    (
+                        (tile_x * tile_width + x, tile_y * tile_height + y),
+                        (risk + tile_x as u32 + tile_y as u32 - 1) % 9 + 1,
+                    )
+                })
+        })
+        .collect();
+    dijkstra(&graph)
 }
 
-fn parse_data(data: &str) -> HashMap<Point, i32> {
+fn parse_data(data: &str) -> HashMap<Point, u32> {
     data.lines()
         .enumerate()
         .flat_map(|(y, line)| {
             line.chars()
                 .enumerate()
-                .map(move |(x, c)| ((x as i32, y as i32), c.to_digit(10).unwrap() as i32))
+                .map(move |(x, c)| ((x as i32, y as i32), c.to_digit(10).unwrap()))
         })
         .collect()
 }
 
-// https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm#Using_a_priority_queue
-fn dijkstra(graph: &HashMap<Point, i32>) -> i32 {
-    let x_max = graph.keys().max_by_key(|&(x, _)| x).unwrap().0;
-    let source = (0, 0);
-    let target = (x_max, x_max);
-    let mut prev: HashMap<Point, Point> = HashMap::new();
-    let mut dist: HashMap<Point, i32> = HashMap::new();
-    let mut q: HashSet<Point> = HashSet::new();
+// https://doc.rust-lang.org/std/collections/binary_heap/index.html
+fn dijkstra(graph: &HashMap<Point, u32>) -> u32 {
+    let start = (0, 0);
+    let &goal = graph.keys().max().unwrap();
+    let mut dists: HashMap<Point, u32> = HashMap::new();
     for &v in graph.keys() {
-        dist.insert(v, i32::MAX);
-        prev.insert(v, (-1, -1));
-        q.insert(v);
+        dists.insert(v, u32::MAX);
     }
-    dist.insert(source, 0);
-    while !q.is_empty() {
-        let u = *q
-            .iter()
-            .map(|point| (point, dist[&point]))
-            .min_by_key(|(_, value)| *value)
-            .unwrap()
-            .0;
-        q.remove(&u);
-        if u == target {
-            break;
+    let mut heap = BinaryHeap::from([(Reverse(0), start)]);
+    while let Some((Reverse(cost), position)) = heap.pop() {
+        if position == goal {
+            return cost;
         }
         for (dx, dy) in [(0, 1), (1, 0), (-1, 0), (0, -1)] {
-            let v = (u.0 + dx, u.1 + dy);
-            if q.get(&v).is_some() {
-                let alt = dist[&u] + i32::abs(graph[&u] + graph[&v]);
-                if alt < dist[&v] {
-                    dist.insert(v, alt);
-                    prev.insert(v, u);
+            let edge = (position.0 + dx, position.1 + dy);
+            if let Some(edge_cost) = graph.get(&edge) {
+                if cost + edge_cost < dists[&edge] {
+                    heap.push((Reverse(cost + edge_cost), edge));
+                    dists.insert(edge, cost + edge_cost);
                 }
             }
         }
     }
-    let mut risk = 0;
-    let mut u = target;
-
-    while u != source {
-        dbg!(u);
-        u = prev[&u];
-        risk += graph[&u];
-    }
-    dbg!(u);
-    risk
+    panic!()
 }
 
 #[cfg(test)]
@@ -91,16 +85,16 @@ mod tests {
 
     #[test]
     fn test_two_sample() {
-        assert_eq!(part_two(SAMPLE_DATA), 61229);
+        assert_eq!(part_two(SAMPLE_DATA), 315);
     }
 
     #[test]
     fn test_one() {
-        assert_eq!(part_one(DATA), 383);
+        assert_eq!(part_one(DATA), 685);
     }
 
     #[test]
     fn test_two() {
-        assert_eq!(part_two(DATA), 998900);
+        assert_eq!(part_two(DATA), 2995);
     }
 }
