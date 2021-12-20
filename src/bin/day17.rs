@@ -19,9 +19,10 @@ fn part_one(data: &str) -> isize {
 fn part_two(data: &str) -> isize {
     let [min_x_area, max_x_area, min_y_area, max_y_area] = parse_data(data);
     let mut count = 0;
-    // No need to check beyond a x velocity of max_x_target (we should shoot beyond the area)
+    // No need to check beyond a x velocity of max_x_target (we would shoot beyond the area)
     for init_vx in 0..=max_x_area {
         // No need to check before a y velocity of min_y_target (we would shoot below the area)
+        // max y velocity is the same as part 1
         for init_vy in min_y_area..=(-min_y_area - 1) {
             let (mut x, mut y) = (0, 0);
             let (mut vx, mut vy) = (init_vx, init_vy);
@@ -30,6 +31,9 @@ fn part_two(data: &str) -> isize {
                 y += vy;
                 vx -= vx.signum();
                 vy -= 1;
+                if vx == 0 && x < min_x_area {
+                    break;
+                }
                 if (min_x_area..=max_x_area).contains(&x) && (min_y_area..=max_y_area).contains(&y)
                 {
                     count += 1;
