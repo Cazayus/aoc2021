@@ -81,8 +81,7 @@ fn part_two(data: &str) -> i32 {
 }
 
 fn parse_data(data: &str) -> (Vec<i32>, Vec<Board>) {
-    let lines = data.lines().collect::<Vec<_>>();
-    let mut lines = lines.iter();
+    let mut lines = data.lines();
     let instructions: Vec<i32> = lines
         .next()
         .unwrap()
@@ -90,22 +89,18 @@ fn parse_data(data: &str) -> (Vec<i32>, Vec<Board>) {
         .map(|value| value.parse().unwrap())
         .collect();
     let mut boards: Vec<Board> = Vec::new();
-    loop {
-        let next = lines.next();
-        if next != None {
-            let next = next.unwrap();
-            if next.is_empty() {
-                let mut board = Board {
-                    content: [(-1, false); 25],
-                };
-                for line_index in 0..5 {
-                    board.set_line(lines.next().unwrap(), line_index);
-                }
-                boards.push(board)
+    let mut next = lines.next();
+    while let Some(line) = next {
+        if line.is_empty() {
+            let mut board = Board {
+                content: [(-1, false); 25],
+            };
+            for line_index in 0..5 {
+                board.set_line(lines.next().unwrap(), line_index);
             }
-        } else {
-            break;
+            boards.push(board)
         }
+        next = lines.next();
     }
     (instructions, boards)
 }
