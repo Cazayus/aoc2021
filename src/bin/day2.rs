@@ -16,7 +16,7 @@ impl From<&str> for Command {
             "forward" => Forward(n),
             "down" => Down(n),
             "up" => Up(n),
-            _ => panic!(),
+            _ => unreachable!(),
         }
     }
 }

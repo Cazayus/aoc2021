@@ -21,7 +21,7 @@ fn part_one(data: &str) -> usize {
             match &line[11..12] {
                 "x" => instructions.push(Instruction::X(line[13..].parse().unwrap())),
                 "y" => instructions.push(Instruction::Y(line[13..].parse().unwrap())),
-                _ => panic!(),
+                _ => unreachable!(),
             }
         } else if !line.is_empty() {
             let coord: Vec<u32> = line

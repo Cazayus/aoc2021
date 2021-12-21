@@ -229,7 +229,7 @@ fn solve_one_scanner(
             }
         }
     }
-    panic!()
+    unreachable!()
 }
 
 #[cfg(test)]

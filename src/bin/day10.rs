@@ -63,7 +63,7 @@ fn compute_error_score(line: &str, stack: &mut Vec<char>) -> i64 {
                     return 25137;
                 }
             }
-            _ => panic!(),
+            _ => unreachable!(),
         }
     }
     0

@@ -28,7 +28,7 @@ fn compute_iteration(data: &str, nb_step: u32) -> u64 {
         .iter()
         .map(|&line| match *line {
             [a, b, .., c] => ([a, b], c),
-            _ => panic!(),
+            _ => unreachable!(),
         })
         .collect();
     for _ in 0..nb_step {

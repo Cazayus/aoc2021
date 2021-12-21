@@ -60,7 +60,7 @@ fn part_one(data: &str) -> i32 {
             }
         }
     }
-    panic!()
+    unreachable!()
 }
 
 fn part_two(data: &str) -> i32 {
@@ -77,7 +77,7 @@ fn part_two(data: &str) -> i32 {
         }
         boards.retain(|board| !board.is_completed());
     }
-    panic!();
+    unreachable!();
 }
 
 fn parse_data(data: &str) -> (Vec<i32>, Vec<Board>) {

@@ -84,7 +84,7 @@ fn parse_result(bits: &mut IntoIter<bool>) -> Result {
             5 => (sub_values[0] > sub_values[1]) as usize,
             6 => (sub_values[0] < sub_values[1]) as usize,
             7 => (sub_values[0] == sub_values[1]) as usize,
-            _ => panic!(),
+            _ => unreachable!(),
         };
         Result {
             version_sum,

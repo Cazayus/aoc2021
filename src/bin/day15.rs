@@ -72,7 +72,7 @@ fn dijkstra(graph: &HashMap<Point, u32>) -> u32 {
             }
         }
     }
-    panic!()
+    unreachable!()
 }
 
 #[cfg(test)]
