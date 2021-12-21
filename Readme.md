@@ -1,7 +1,7 @@
 
 ### Repo for Advent of Code 2021
 
-[Link](https://www.markdownguide.org/basic-syntax/) to Markdown syntax
+[Link](https://www.markdownguide.org/basic-syntax/) to Markdown syntax (also browse around in this site)
 
 [AOC subreddit](https://www.reddit.com/r/adventofcode/) (repos below have comments on solutions megathread)
 
