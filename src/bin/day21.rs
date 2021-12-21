@@ -1,67 +1,38 @@
 const DATA: &str = include_str!("../inputs/day21.txt");
 
-struct Player {
-    pos: u32,
-    score: u32,
-    consecutive_play: u8,
-}
-
-impl Player {
-    fn advance_player(&mut self, value: u32) {
-        self.pos = (self.pos + value - 1) % 10 + 1;
-        self.consecutive_play += 1;
-    }
-
-    fn advance_score(&mut self) {
-        self.score += self.pos;
-    }
-}
-
 fn main() {
     println!("part 1: {}", part_one(DATA));
     println!("part 2: {}", part_two(DATA));
 }
 
-fn part_one(data: &str) -> u32 {
+fn part_one(data: &str) -> usize {
     let mut lines = data.lines();
-    let mut player1 = Player {
-        pos: lines.next().unwrap()[28..].parse::<u32>().unwrap(),
-        score: 0,
-        consecutive_play: 0,
-    };
-    let mut player2 = Player {
-        pos: lines.next().unwrap()[28..].parse::<u32>().unwrap(),
-        score: 0,
-        consecutive_play: 0,
-    };
-    let mut current_dice_value = 100;
-    let mut dice_roll = 0;
-    while player1.score < 1000 && player2.score < 1000 {
-        dice_roll += 1;
-        current_dice_value = (current_dice_value) % 100 + 1;
-        if player1.consecutive_play < 3 {
-            player1.advance_player(current_dice_value);
-            if player1.consecutive_play == 3 {
-                player1.advance_score();
-                player2.consecutive_play = 0;
-            }
-        } else {
-            player2.advance_player(current_dice_value);
-            if player2.consecutive_play == 3 {
-                player2.advance_score();
-                player1.consecutive_play = 0;
-            }
+    let mut pos = [
+        lines.next().unwrap()[28..].parse().unwrap(),
+        lines.next().unwrap()[28..].parse().unwrap(),
+    ];
+    let mut scores = [0, 0];
+
+    for turn in 0.. {
+        let player_index = turn % 2;
+        let total_roll = (1..=3)
+            .map(|i| wrap_around(3 * turn + i, 100))
+            .sum::<usize>();
+        pos[player_index] = wrap_around(pos[player_index] + total_roll, 10);
+        scores[player_index] += pos[player_index];
+        if scores[player_index] >= 1000 {
+            return 3 * (turn + 1) * scores[(player_index + 1) % 2];
         }
     }
-    if player1.score < 1000 {
-        player1.score * dice_roll
-    } else {
-        player2.score * dice_roll
-    }
+    unreachable!()
 }
 
 fn part_two(data: &str) -> usize {
     data.len()
+}
+
+fn wrap_around(value: usize, end_range: usize) -> usize {
+    ((value - 1) % end_range) + 1
 }
 
 #[cfg(test)]
@@ -82,7 +53,7 @@ mod tests {
 
     #[test]
     fn test_one() {
-        assert_eq!(part_one(DATA), 353);
+        assert_eq!(part_one(DATA), 518418);
     }
 
     #[test]
