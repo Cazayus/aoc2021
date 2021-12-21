@@ -64,7 +64,7 @@ impl Point3D {
 
 struct Beacon {
     position_in_common_space: Point3D,
-    orientations: [Point3D; 24],
+    positions: [Point3D; 24],
 }
 
 struct Scanner {
@@ -139,7 +139,7 @@ fn get_beacon(line: &str) -> Beacon {
     };
     Beacon {
         position_in_common_space: p,
-        orientations: [
+        positions: [
             // 4 rotations with x on x
             p,
             p.rotate_x(),
@@ -191,40 +191,40 @@ fn solve_one_scanner(
 ) -> (usize, Scanner) {
     for (index, scanner) in scanners.iter().enumerate() {
         for solved_scanner in solved_scanners {
-            // pour chacune des 24 orientation
+            // pour chacune des 24 orientation du scanner
             for n in 0..24 {
                 dist_map.clear();
                 // pour chaque beacon du scanner résolu
-                for beacon in &solved_scanner.beacons {
-                    let base_orientation = &beacon.position_in_common_space;
+                for solved_beacon in &solved_scanner.beacons {
+                    let position_in_common_space = &solved_beacon.position_in_common_space;
                     // pour chaque beacon de l'orientation n du scanner non résolu
-                    for beacon_after in &scanner.beacons {
-                        let beacon_after = &beacon_after.orientations[n];
+                    for beacon in &scanner.beacons {
+                        let position = &beacon.positions[n];
                         // calculer la distance
-                        let distance = beacon_after.dist_to_point(base_orientation);
-                        *dist_map.entry(distance).or_insert(0) += 1;
+                        let distance = position.dist_to_point(position_in_common_space);
+                        let temp = dist_map.entry(distance).or_insert(0);
+                        *temp += 1;
+                        if *temp == 12 {
+                            // si on trouve 12 distances identiques, on sait résoudre le scanner
+                            return (
+                                index,
+                                Scanner {
+                                    id: scanner.id,
+                                    position_in_common_space: distance,
+                                    beacons: scanner
+                                        .beacons
+                                        .iter()
+                                        .map(|beacon| Beacon {
+                                            position_in_common_space: {
+                                                beacon.positions[n] + distance
+                                            },
+                                            positions: Default::default(),
+                                        })
+                                        .collect(),
+                                },
+                            );
+                        }
                     }
-                }
-                // si on trouve 12 ou plus distances identiques, on sait résoudre le scanner_after
-                if dist_map.values().any(|&count| count >= 12) {
-                    let distance = dist_map.iter().max_by_key(|(_, &count)| count).unwrap().0;
-                    return (
-                        index,
-                        Scanner {
-                            id: scanner.id,
-                            position_in_common_space: *distance,
-                            beacons: scanner
-                                .beacons
-                                .iter()
-                                .map(|beacon| Beacon {
-                                    position_in_common_space: {
-                                        beacon.orientations[n] + *distance
-                                    },
-                                    orientations: Default::default(),
-                                })
-                                .collect(),
-                        },
-                    );
                 }
             }
         }
