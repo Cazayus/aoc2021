@@ -31,8 +31,8 @@ fn add(number1: &str, number2: &str) -> String {
     reduce(&format!("[{},{}]", number1, number2))
 }
 
-fn reduce(number: &String) -> String {
-    let mut result = number.clone();
+fn reduce(number: &str) -> String {
+    let mut result = number.to_string();
     let mut has_exploded = true;
     let mut has_split = true;
     while has_exploded || has_split {
@@ -170,7 +170,7 @@ fn split(number: &mut String) -> bool {
 
 fn magnitude(number: &str) -> u32 {
     let mut local_number: String = number.to_string();
-    let pat = Regex::new(r"\[(\d+),(\d+)\]").unwrap();
+    let pat = Regex::new(r"\[(\d+),(\d+)]").unwrap();
     while let Some(caps) = pat.captures(&local_number) {
         let concat: i32 = (3 * &caps[1].parse().unwrap()) + (2 * &caps[2].parse().unwrap());
         local_number = local_number.replacen(&caps[0], concat.to_string().as_str(), 1);
