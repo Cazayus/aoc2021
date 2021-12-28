@@ -116,12 +116,10 @@ fn total_cost(state: State, memo: &mut HashMap<State, usize>, room_size: usize) 
     if let Some(cost) = memo.get(&state) {
         return *cost;
     }
-    if [A, B, C, D].into_iter().all(|room_type| {
-        state
-            .room(room_type)
-            .iter()
-            .all(|&room_content| room_content == room_type)
-    }) {
+    if [A, B, C, D]
+        .into_iter()
+        .all(|room_type| state.room(room_type).len() == room_size && state.room_ready(room_type))
+    {
         return 0;
     }
     let cost = (0..7)
@@ -224,6 +222,6 @@ mod tests {
     #[test]
     fn case() {
         assert_eq!(solve(DATA, PART_ONE_ROOM_SIZE), 15412);
-        assert_eq!(solve(DATA_B, PART_TWO_ROOM_SIZE), 12521);
+        assert_eq!(solve(DATA_B, PART_TWO_ROOM_SIZE), 52358);
     }
 }
